@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   FaCloudUploadAlt,
   FaHeading,
@@ -11,24 +11,22 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Navbar from "../components/Navbar";
 import "./CreatePost.css";
-import { type } from "server/reply";
 
 const CreatePost = () => {
   const navigate = useNavigate();
-  
+
   // Get current user from localStorage
   const authData = JSON.parse(localStorage.getItem("authData") || "{}");
   const defaultAuthor = authData?.username || "User";
-  
-  
+
   const [formData, setFormData] = useState({
     title: "",
-    author: authData?.username ,// Automatically set from dashboard username
+    author: defaultAuthor,
     description: "",
     imageUrl: "",
-    imageType:'url'
+    imageType: "url",
   });
-  const fileInput =useRef(null);
+
   const [imageTab, setImageTab] = useState("url");
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -39,18 +37,12 @@ const CreatePost = () => {
       [e.target.name]: e.target.value,
     });
   };
-  const handleFileTypeChange=(type)=>{
-    setFormData
-  }
 
   const handleImageUrlChange = (e) => {
     const url = e.target.value;
     setFormData({ ...formData, imageUrl: url });
-    if (url) {
-      setImagePreview(url);
-    }
+    setImagePreview(url);
   };
-
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -58,7 +50,11 @@ const CreatePost = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
-        setFormData({ ...formData, imageUrl: reader.result });
+        setFormData({
+          ...formData,
+          imageUrl: reader.result,
+          imageType: "file",
+        });
       };
       reader.readAsDataURL(file);
     }
@@ -76,7 +72,7 @@ const CreatePost = () => {
     try {
       const newPost = {
         title: formData.title,
-        author: formData.author || defaultAuthor, // Use form author or default
+        author: formData.author || defaultAuthor,
         description: formData.description,
         image: formData.imageUrl || "https://via.placeholder.com/600x400",
         date: new Date().toLocaleDateString("en-US", {
@@ -112,20 +108,24 @@ const CreatePost = () => {
   const handleClearForm = () => {
     setFormData({
       title: "",
-      author: defaultAuthor, // Reset to default author instead of empty string
+      author: defaultAuthor,
       description: "",
       imageUrl: "",
+      imageType: "url",
     });
     setImagePreview(null);
+    setImageTab("url");
     toast.info("Form cleared");
   };
 
   return (
     <div className="create-post-page">
-      <Navbar onLogout={() => {
-        localStorage.removeItem("loginData");
-        navigate("/login");
-      }} />
+      <Navbar
+        onLogout={() => {
+          localStorage.removeItem("authData");
+          navigate("/login");
+        }}
+      />
 
       <div className="create-post-container">
         <header className="form-header">
@@ -164,9 +164,6 @@ const CreatePost = () => {
                   placeholder="Your name"
                 />
               </div>
-              <small className="author-hint">
-                Author name is automatically set to your username. You can change it if needed.
-              </small>
             </div>
 
             <div className="form-group">
@@ -176,34 +173,43 @@ const CreatePost = () => {
                 value={formData.description}
                 onChange={handleChange}
                 className="form-control"
-                placeholder="What's on your mind? Write your story here."
+                placeholder="What's on your mind?"
                 required
               ></textarea>
             </div>
 
             <div className="form-group">
               <label>Cover Image</label>
-                {!imagePreview ? (
-                    <>
-              <div className="image-source-tabs">
-                <button
-                  type="button"
-                  className={`tab-btn ${formData.imageType==='url'?'active':''}`}
-                  onClick={() => setImageTab("url")}
-                >
-                  Image URL
-                </button>
-                <button
-                  type="button"
-                  className={`tab-btn ${formData.imageType==='file'?'active':''}`}
-                  onClick={() => setImageTab("upload")}
-                >
-                  Upload File
-                </button>
-              </div>
-                    </>
-                  )
-                  }
+
+              {!imagePreview && (
+                <div className="image-source-tabs">
+                  <button
+                    type="button"
+                    className={`tab-btn ${
+                      imageTab === "url" ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      setImageTab("url");
+                      setFormData({ ...formData, imageType: "url" });
+                    }}
+                  >
+                    Image URL
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`tab-btn ${
+                      imageTab === "upload" ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      setImageTab("upload");
+                      setFormData({ ...formData, imageType: "file" });
+                    }}
+                  >
+                    Upload File
+                  </button>
+                </div>
+              )}
 
               {imageTab === "url" && (
                 <div className="input-wrapper">
@@ -214,18 +220,20 @@ const CreatePost = () => {
                     value={formData.imageUrl}
                     onChange={handleImageUrlChange}
                     className="form-control"
-                    placeholder="Paste image URL here. (e.g. https://...)"
+                    placeholder="Paste image URL here"
                   />
                 </div>
               )}
 
               {imageTab === "upload" && (
-                <div 
+                <div
                   className="image-upload-area"
-                  onClick={() => document.getElementById("imageUpload").click()}
+                  onClick={() =>
+                    document.getElementById("imageUpload").click()
+                  }
                 >
                   <FaCloudUploadAlt className="upload-icon" />
-                  <p>Click to upload image from your device</p>
+                  <p>Click to upload image</p>
                   <input
                     id="imageUpload"
                     type="file"
@@ -238,7 +246,11 @@ const CreatePost = () => {
 
               {imagePreview && (
                 <div className="image-preview-container">
-                  <img src={imagePreview} alt="Preview" className="image-preview" />
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="image-preview"
+                  />
                   <button
                     type="button"
                     className="remove-image-btn"
@@ -251,15 +263,17 @@ const CreatePost = () => {
             </div>
 
             <div className="form-actions-row">
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="submit-btn"
                 disabled={loading}
               >
-                <FaRegPaperPlane /> {loading ? "Publishing..." : "Publish Post"}
+                <FaRegPaperPlane />
+                {loading ? " Publishing..." : " Publish Post"}
               </button>
-              <button 
-                type="button" 
+
+              <button
+                type="button"
                 className="cancel-btn"
                 onClick={handleClearForm}
               >
