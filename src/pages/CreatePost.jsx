@@ -83,7 +83,7 @@ const CreatePost = () => {
         createdAt: new Date().toISOString(),
       };
 
-      const response = await fetch("http://localhost:3000/posts", {
+      const response = await fetch("http://localhost:3001/posts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

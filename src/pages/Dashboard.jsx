@@ -10,12 +10,15 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const handleClick = (postId) => {
+  navigate(`/post-details/${postId}`);
+};
 
   // Fetch all posts from db.json
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:3000/posts");
+      const response = await fetch("http://localhost:3001/posts");
       const data = await response.json();
       setPosts(data);
     } catch (error) {
@@ -145,7 +148,7 @@ const Dashboard = () => {
                     <p className="post-card-description">
                       {post.description || post.content || post.excerpt}
                     </p>
-                    <button className="read-more-btn">Read More</button>
+                    <button className="read-more-btn" onClick={handleClick}>Read More</button>
                   </div>
                 </div>
               ))

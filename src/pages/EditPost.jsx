@@ -32,7 +32,7 @@ const EditPost = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/posts/${id}`);
+        const res = await fetch(`http://localhost:3001/posts/${id}`);
         if (!res.ok) throw new Error();
         const data = await res.json();
 
