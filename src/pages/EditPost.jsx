@@ -105,7 +105,7 @@ const EditPost = () => {
       };
 
       const response = await fetch(
-        `http://localhost:3000/posts/${id}`,
+        `http://localhost:3001/posts/${id}`,
         {
           method: "PUT",
           headers: {

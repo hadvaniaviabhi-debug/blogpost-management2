@@ -46,13 +46,13 @@
       "id": "e6d1"
     },
     {
-      "id": "2bf5",
-      "title": "post 7",
+      "title": "post 6",
       "author": "Hadvani Avi",
       "description": "hello cow baby image",
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvSW-v1z7uRbpjv47qaywjH7VP00GzfgQoMQ&s",
       "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvSW-v1z7uRbpjv47qaywjH7VP00GzfgQoMQ&s",
-      "date": "February 14, 2026",
-      "createdAt": "2026-02-14T10:24:44.697Z"
+      "updatedAt": "2026-02-17T09:55:37.536Z",
+      "id": "2bf5"
     }
   ]
 }

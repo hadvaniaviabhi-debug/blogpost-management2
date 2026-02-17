@@ -42,7 +42,7 @@ const Dashboard = () => {
   // Delete post
   const handleDeletePost = async (id) => {
     try {
-      await fetch(`http://localhost:3000/posts/${id}`, {
+      await fetch(`http://localhost:3001/posts/${id}`, {
         method: "DELETE",
       });
       setPosts(posts.filter((post) => post.id !== id));
@@ -148,7 +148,7 @@ const Dashboard = () => {
                     <p className="post-card-description">
                       {post.description || post.content || post.excerpt}
                     </p>
-                    <button className="read-more-btn" onClick={handleClick}>Read More</button>
+                    <button className="read-more-btn" onClick={()=>handleClick(post.id)}>Read More</button>
                   </div>
                 </div>
               ))
