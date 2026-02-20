@@ -3,28 +3,30 @@ import {
   Navigate,
   RouterProvider,
 } from "react-router-dom";
-import "./App.css";
-import Dashboard from "./pages/Dashboard.jsx";
-import Login from "./Pages/Login.jsx";
-import Register from "./pages/Register.jsx";
-import AuthGuard from "./auth/AuthGuard.jsx";
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import CreatePost from "./pages/CreatePost.jsx";
-import EditPost from "./pages/EditPost.jsx"; // ✅ Added
-import PostDetails from "./pages/PostDetails.jsx";
+import "./App.css";
+import AuthGuard from "./auth/AuthGuard.jsx";
 import Analytics from "./pages/Analytics.jsx";
+import CreatePost from "./pages/CreatePost";
+import Dashboard from "./pages/Dashboard";
 import Favorites from "./pages/Favorites.jsx";
+import Login from "./pages/Login.jsx";
+import PostDetails from "./pages/PostDetails.jsx";
+import Register from "./pages/Register.jsx";
+
+const DefaultRoute = () => {
+  const loginData = JSON.parse(localStorage.getItem("loginData"));
+  if (loginData) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return <Navigate to="/login" replace />;
+};
 
 function App() {
   const route = createBrowserRouter([
     {
       path: "/",
-      element: (
-        <AuthGuard required={false}>
-          <DefaultRoute />
-        </AuthGuard>
-      ),
+      element: <DefaultRoute />,
     },
     {
       path: "/login",
@@ -51,10 +53,10 @@ function App() {
       ),
     },
     {
-      path: "/favorites",
+      path: "/analytics",
       element: (
         <AuthGuard required={true}>
-          <Favorites />
+          <Analytics />
         </AuthGuard>
       ),
     },
@@ -67,45 +69,27 @@ function App() {
       ),
     },
     {
-      path: "/edit-post/:id", // ✅ Dynamic Route
+      path: "/edit-post/:id",
       element: (
         <AuthGuard required={true}>
-          <EditPost />
+          <CreatePost />
         </AuthGuard>
       ),
     },
-     {
-      path: "/post-details/:id", // ✅ Dynamic Route
-      element: (
-        <AuthGuard required={true}>
-          <PostDetails  />
-        </AuthGuard>
-      ),
-    },
-   {
-      path: "/analytics", // ✅ Dynamic Route
-      element: (
-        <AuthGuard required={true}>
-          <Analytics  />
-        </AuthGuard>
-      ),
-    },
-
-    
-    
     {
-      path: "*",
+      path: "/post/:id",
       element: (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "100px",
-            color: "white",
-          }}
-        >
-          <h1>404 - Page Not Found</h1>
-          <p>The page you are looking for does not exist.</p>
-        </div>
+        <AuthGuard required={true}>
+          <PostDetails />
+        </AuthGuard>
+      ),
+    },
+    {
+      path: "/favorites",
+      element: (
+        <AuthGuard required={true}>
+          <Favorites />
+        </AuthGuard>
       ),
     },
   ]);
@@ -128,9 +112,5 @@ function App() {
     </>
   );
 }
-
-const DefaultRoute = () => {
-  return <Navigate to="/dashboard" replace />;
-};
 
 export default App;
